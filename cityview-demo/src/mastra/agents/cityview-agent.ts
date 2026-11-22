@@ -70,8 +70,8 @@ export const cityviewAgent = new Agent({
    id: 'cityview-agent',
    name: 'City View Assistant',
    instructions,
-   // Set MODEL in .env to switch models. Check Mastra's model list for exact names.
-   model: 'openrouter/google/gemini-2.5-flash-lite',
+   // Set MODEL in .env to switch models (e.g. openrouter/google/gemini-2.5-flash or openrouter/openai/gpt-4o-mini)
+   model: process.env.MODEL || 'openrouter/google/gemini-2.5-flash',
    defaultOptions: {
       maxSteps: 15,
    },

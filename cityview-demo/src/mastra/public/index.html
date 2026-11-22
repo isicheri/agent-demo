@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>City View Park & Resort — Virtual Property Consultant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #091522 0%, #0d2138 50%, #0a192c 100%);
+      color: #1e293b;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .chat-container {
+      width: 100%;
+      max-width: 480px;
+      height: 90vh;
+      max-height: 780px;
+      background: #ffffff;
+      border-radius: 20px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* Header */
+    .chat-header {
+      background: linear-gradient(135deg, #091d30 0%, #112d4a 100%);
+      padding: 20px 22px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: #ffffff;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+    }
+
+    .avatar-wrapper {
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      font-weight: 800;
+      color: #ffffff;
+      border: 2px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .status-dot {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      width: 11px;
+      height: 11px;
+      background-color: #10b981;
+      border-radius: 50%;
+      border: 2px solid #091d30;
+      box-shadow: 0 0 8px #10b981;
+    }
+
+    .header-details h1 {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.2px;
+      margin-bottom: 2px;
+    }
+
+    .header-details p {
+      font-size: 12px;
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .estate-badge {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      background: rgba(56, 189, 248, 0.15);
+      color: #38bdf8;
+      padding: 3px 8px;
+      border-radius: 6px;
+      margin-left: auto;
+      border: 1px solid rgba(56, 189, 248, 0.25);
+    }
+
+    /* Message Feed */
+    .chat-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      background-color: #f8fafc;
+    }
+
+    .message {
+      display: flex;
+      flex-direction: column;
+      max-width: 82%;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .message.bot {
+      align-self: flex-start;
+    }
+
+    .message.user {
+      align-self: flex-end;
+    }
+
+    .message-bubble {
+      padding: 13px 16px;
+      border-radius: 16px;
+      font-size: 14px;
+      line-height: 1.55;
+      word-wrap: break-word;
+    }
+
+    .message.bot .message-bubble {
+      background: #ffffff;
+      color: #1e293b;
+      border-bottom-left-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04), 0 0 0 1px #e2e8f0;
+    }
+
+    .message.user .message-bubble {
+      background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+      color: #ffffff;
+      border-bottom-right-radius: 4px;
+      box-shadow: 0 3px 8px rgba(2, 132, 199, 0.25);
+    }
+
+    .message-time {
+      font-size: 10px;
+      color: #94a3b8;
+      margin-top: 4px;
+      padding: 0 4px;
+    }
+
+    .message.user .message-time {
+      align-self: flex-end;
+    }
+
+    /* Quick suggestions */
+    .quick-replies {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .chip-btn {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      color: #0369a1;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 7px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+    }
+
+    .chip-btn:hover {
+      background: #f0f9ff;
+      border-color: #38bdf8;
+      transform: translateY(-1px);
+    }
+
+    /* Typing indicator */
+    .typing-indicator {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 12px 16px;
+      background: #ffffff;
+      border-radius: 16px;
+      border-bottom-left-radius: 4px;
+      width: fit-content;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04), 0 0 0 1px #e2e8f0;
+    }
+
+    .typing-dot {
+      width: 7px;
+      height: 7px;
+      background: #94a3b8;
+      border-radius: 50%;
+      animation: bounce 1.4s infinite ease-in-out both;
+    }
+
+    .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+    .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+
+    .typing-cursor {
+      display: inline-block;
+      color: #0284c7;
+      font-weight: 700;
+      animation: blink 0.7s infinite;
+      margin-left: 2px;
+      font-size: 13px;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    @keyframes bounce {
+      0%, 80%, 100% { transform: scale(0); }
+      40% { transform: scale(1); }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Input Footer */
+    .chat-footer {
+      padding: 14px 18px;
+      background: #ffffff;
+      border-top: 1px solid #e2e8f0;
+    }
+
+    .input-form {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #f1f5f9;
+      border-radius: 12px;
+      padding: 5px 6px 5px 14px;
+      border: 1px solid #e2e8f0;
+      transition: border-color 0.2s;
+    }
+
+    .input-form:focus-within {
+      border-color: #0284c7;
+      background: #ffffff;
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.1);
+    }
+
+    .chat-input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      outline: none;
+      font-size: 14px;
+      color: #0f172a;
+    }
+
+    .send-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+      border: none;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+
+    .send-btn:hover {
+      transform: scale(1.05);
+    }
+
+    .send-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .footer-note {
+      text-align: center;
+      font-size: 11px;
+      color: #94a3b8;
+      margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <!-- Header -->
+    <header class="chat-header">
+      <div class="avatar-wrapper">
+        <div class="avatar">🏛️</div>
+        <div class="status-dot"></div>
+      </div>
+      <div class="header-details">
+        <h1>City View Assistant</h1>
+        <p>Verified Property Consultant</p>
+      </div>
+      <div class="estate-badge">Abuja</div>
+    </header>
+
+    <!-- Chat Messages -->
+    <main class="chat-messages" id="chatMessages">
+      <div class="message bot">
+        <div class="message-bubble">
+          Hello! Welcome to <strong>City View Park & Resort</strong>, Abuja. I'm your virtual property consultant. How can I assist you with your land purchase or inspection today?
+        </div>
+        <span class="message-time">Just now</span>
+      </div>
+
+      <div class="quick-replies" id="quickReplies">
+        <button class="chip-btn" onclick="sendQuickReply('What plot sizes are available at City View?')">📐 Plot Sizes</button>
+        <button class="chip-btn" onclick="sendQuickReply('Where exactly in Abuja is City View located?')">📍 Location</button>
+        <button class="chip-btn" onclick="sendQuickReply('I would like to book a site inspection')">📅 Book Inspection</button>
+      </div>
+    </main>
+
+    <!-- Footer Input Form -->
+    <footer class="chat-footer">
+      <form class="input-form" id="chatForm" onsubmit="handleSend(event)">
+        <input 
+          type="text" 
+          id="userInput" 
+          class="chat-input" 
+          placeholder="Ask a question or request an inspection..." 
+          autocomplete="off" 
+          required 
+        />
+        <button type="submit" id="sendBtn" class="send-btn" title="Send message">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </form>
+      <div class="footer-note">Grounded in verified estate listings • Instant agent notification</div>
+    </footer>
+  </div>
+
+  <script>
+    const messages = [];
+    const chatMessages = document.getElementById('chatMessages');
+    const userInput = document.getElementById('userInput');
+    const sendBtn = document.getElementById('sendBtn');
+    const quickReplies = document.getElementById('quickReplies');
+
+    // Smart API endpoint: works automatically on localhost and on any VPS IP/domain
+    const API_ENDPOINT = window.location.port === '4111'
+      ? '/api/agents/cityviewAgent/generate'
+      : (window.location.hostname ? `${window.location.protocol}//${window.location.hostname}:4111/api/agents/cityviewAgent/generate` : 'http://localhost:4111/api/agents/cityviewAgent/generate');
+
+    function appendMessage(role, text) {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = `message ${role}`;
+
+      const bubbleDiv = document.createElement('div');
+      bubbleDiv.className = 'message-bubble';
+      bubbleDiv.innerHTML = formatText(text);
+
+      const timeSpan = document.createElement('span');
+      timeSpan.className = 'message-time';
+      const now = new Date();
+      timeSpan.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      msgDiv.appendChild(bubbleDiv);
+      msgDiv.appendChild(timeSpan);
+      chatMessages.appendChild(msgDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function typewriterMessage(text, onComplete) {
+      const msgDiv = document.createElement('div');
+      msgDiv.className = 'message bot';
+
+      const bubbleDiv = document.createElement('div');
+      bubbleDiv.className = 'message-bubble';
+      bubbleDiv.innerHTML = '<span class="typing-cursor">▌</span>';
+
+      const timeSpan = document.createElement('span');
+      timeSpan.className = 'message-time';
+      const now = new Date();
+      timeSpan.textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      msgDiv.appendChild(bubbleDiv);
+      msgDiv.appendChild(timeSpan);
+      chatMessages.appendChild(msgDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      let index = 0;
+      // Snappy and natural typing speed (14ms per char)
+      const speed = 14;
+
+      function typeNext() {
+        if (index < text.length) {
+          index += 2; // natural cadence
+          if (index > text.length) index = text.length;
+          const currentText = text.slice(0, index);
+          bubbleDiv.innerHTML = formatText(currentText) + '<span class="typing-cursor">▌</span>';
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+          setTimeout(typeNext, speed);
+        } else {
+          bubbleDiv.innerHTML = formatText(text);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+          if (onComplete) onComplete();
+        }
+      }
+
+      typeNext();
+    }
+
+    function formatText(txt) {
+      return txt
+        .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n/g, '<br/>');
+    }
+
+    function showTyping() {
+      const typingDiv = document.createElement('div');
+      typingDiv.className = 'message bot';
+      typingDiv.id = 'typingIndicator';
+      typingDiv.innerHTML = `
+        <div class="typing-indicator">
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+          <div class="typing-dot"></div>
+        </div>
+      `;
+      chatMessages.appendChild(typingDiv);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function removeTyping() {
+      const indicator = document.getElementById('typingIndicator');
+      if (indicator) indicator.remove();
+    }
+
+    async function handleSend(e) {
+      if (e) e.preventDefault();
+      const text = userInput.value.trim();
+      if (!text) return;
+
+      if (quickReplies) quickReplies.style.display = 'none';
+
+      appendMessage('user', text);
+      messages.push({ role: 'user', content: text });
+      userInput.value = '';
+      sendBtn.disabled = true;
+
+      showTyping();
+
+      try {
+        const response = await fetch(API_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages })
+        });
+
+        removeTyping();
+
+        if (!response.ok) {
+          throw new Error('Server returned ' + response.status);
+        }
+
+        const data = await response.json();
+        const replyText = data.text || (data.message && data.message.content) || "I've received your inquiry and our consultant will follow up with you.";
+        
+        messages.push({ role: 'assistant', content: replyText });
+        typewriterMessage(replyText, () => {
+          sendBtn.disabled = false;
+          userInput.focus();
+        });
+
+      } catch (err) {
+        removeTyping();
+        console.error('Chat error:', err);
+        appendMessage('bot', "I'm having a brief connection issue. Please ensure the Mastra server is running or contact our consultant on WhatsApp.");
+        sendBtn.disabled = false;
+        userInput.focus();
+      }
+    }
+
+    function sendQuickReply(text) {
+      userInput.value = text;
+      handleSend();
+    }
+  </script>
+</body>
+</html>

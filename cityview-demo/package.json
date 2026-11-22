@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "mastra dev",
     "build": "mastra build",
+    "start": "mastra start",
+    "ui": "node serve-chat.js",
     "seed:docs": "tsx src/mastra/seed-docs.ts"
   },
   "dependencies": {
